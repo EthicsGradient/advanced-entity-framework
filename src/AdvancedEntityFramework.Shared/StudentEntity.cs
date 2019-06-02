@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AdvancedEntityFramework
+namespace AdvancedEntityFramework.Shared
 {
     public class StudentEntity
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace AdvancedEntityFramework
+namespace AdvancedEntityFramework.Shared
 {
     public class SchoolDbContext : DbContext
     {

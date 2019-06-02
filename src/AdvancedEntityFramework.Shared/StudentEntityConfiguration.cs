@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace AdvancedEntityFramework
+namespace AdvancedEntityFramework.Shared
 {
     public class StudentEntityConfiguration : IEntityTypeConfiguration<StudentEntity>
     {
