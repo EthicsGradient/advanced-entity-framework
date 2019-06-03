@@ -4,6 +4,7 @@ using AdvancedEntityFramework.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using AdvancedEntityFramework.Api.Extensions;
 using AdvancedEntityFramework.Api.Models;
 using AdvancedEntityFramework.Api.Models.CreateStudent;
 using AdvancedEntityFramework.Api.Models.FindStudent;
@@ -43,29 +44,24 @@ namespace AdvancedEntityFramework.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<FindStudentResponse>> Find(Guid studentId)
         {
-            var student = await _schoolDbContext.Students
+            var entity =  await _schoolDbContext.Students
                 .Where(x => x.StudentId == studentId)
-                .Select(x => new
-                {
-                    x.StudentId,
-                    x.FirstName,
-                    x.LastName,
-                    x.DateOfBirth
-                })
                 .SingleOrDefaultAsync();
 
-            return new FindStudentResponse(student.StudentId, student.FirstName, student.LastName,
-                student.DateOfBirth);
+            return new FindStudentResponse(entity.StudentId, entity.FirstName, entity.LastName,
+                entity.DateOfBirth);
         }
 
         [HttpGet]
         public async Task<ActionResult<ListStudentsResponse>> List()
         {
-            var students = (await _schoolDbContext.Students
-                    .ToListAsync())
-                .Select(x => new Student(x.StudentId, x.FirstName, x.LastName, x.DateOfBirth))
-                .ToList();
+            var entities = await _schoolDbContext.Students
+                .ToListAsync();
             
+            var students = entities.Select(x => new Student(x.StudentId, x.FirstName, x.LastName,
+                    x.DateOfBirth))
+                .ToList();
+
             return new ListStudentsResponse(students);
         }
 

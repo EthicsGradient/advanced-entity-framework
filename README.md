@@ -59,16 +59,32 @@ where		JSON_VALUE(NewValues, '$.FirstName') = ''
   - Only include the fields that are required by calling `.Select()` after `.Where()` - reduce bandwidth
   - Always project outside of the query itself - avoid in-memory evaluation
 ```
-.Select(x => new
-{
-    x.StudentId,
-    x.FirstName,
-    x.LastName,
-    x.DateOfBirth
-})
+return await _schoolDbContext.Students
+    .Where(x => x.StudentId == studentId)
+    .Select(x => new FindStudentResponse
+    (
+        x.StudentId,
+        x.FirstName,
+        x.LastName,
+        x.DateOfBirth
+    ))
+    .SingleOrDefaultAsync();
 ```
-- List students
+- *** List students ***
   - Don't use `.Include()`
+```
+var students = await _schoolDbContext.Students
+	.Select(x => new Student
+	(
+		x.StudentId,
+		x.FirstName,
+		x.LastName,
+		x.DateOfBirth
+	))
+	.ToListAsync();
+
+	return new ListStudentsResponse(students);
+```
 - *** In-memory evaluation ***
   - `GroupBy()` before `.Where`
 - *** PredicateBuilder***
