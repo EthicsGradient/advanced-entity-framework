@@ -3,6 +3,7 @@ using Bogus;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
+using AdvancedEntityFramework.Shared.Entities.Students;
 
 namespace AdvancedEntityFramework.Seeder
 {
@@ -10,25 +11,23 @@ namespace AdvancedEntityFramework.Seeder
     {
         private readonly SchoolDbContext _schoolDbContext;
 
-        private DatabaseSeeder(SchoolDbContext schoolDbContext)
-        {
-            _schoolDbContext = schoolDbContext;
-        }
-
-        public static async Task<DatabaseSeeder> Create(string connectionString)
+        public DatabaseSeeder(string connectionString)
         {
             var options = new DbContextOptionsBuilder<SchoolDbContext>()
-                  .UseSqlServer(connectionString)
-                  .Options;
+                .UseSqlServer(connectionString)
+                .Options;
             var schoolDbContext = new SchoolDbContext(options);
             schoolDbContext.ChangeTracker.AutoDetectChangesEnabled = false;
             schoolDbContext.ChangeTracker.LazyLoadingEnabled = false;
             schoolDbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-            await schoolDbContext.Database.EnsureDeletedAsync();
-            await schoolDbContext.Database.EnsureCreatedAsync();
+            _schoolDbContext = schoolDbContext;
+        }
 
-            return new DatabaseSeeder(schoolDbContext);
+        public async Task DeleteAndCreateDatabaseAsync()
+        {
+            await _schoolDbContext.Database.EnsureDeletedAsync();
+            await _schoolDbContext.Database.EnsureCreatedAsync();
         }
 
         public async Task InsertStudentsAsync(int count)
