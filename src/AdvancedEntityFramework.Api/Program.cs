@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace AdvancedEntityFramework.Web
+namespace AdvancedEntityFramework.Api
 {
     public class Program
     {

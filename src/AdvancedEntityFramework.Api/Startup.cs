@@ -6,8 +6,9 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StackifyMiddleware;
 
-namespace AdvancedEntityFramework.Web
+namespace AdvancedEntityFramework.Api
 {
     public class Startup
     {
@@ -23,8 +24,8 @@ namespace AdvancedEntityFramework.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration["ConnectionString"];
-            var poolSize = Configuration.GetValue("PoolSize", 128);
+            var connectionString = Configuration["SqlServer:ConnectionString"];
+            var poolSize = Configuration.GetValue("SqlServer:PoolSize", 128);
 
             services.AddDbContextPool<SchoolDbContext>(
                 o => o.UseSqlServer(connectionString, x => x.EnableRetryOnFailure())
@@ -32,44 +33,24 @@ namespace AdvancedEntityFramework.Web
                     .EnableSensitiveDataLogging(WebHostEnvironment.IsDevelopment())
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking), poolSize);
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => true;
-            });
-
-            services.AddControllersWithViews()
+            services.AddControllers()
                 .AddNewtonsoftJson();
-            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
+            app.UseMiddleware<RequestTracerMiddleware>();
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseCookiePolicy();
+            app.UseDeveloperExceptionPage();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
+                    name: "Default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
             });
         }
     }
