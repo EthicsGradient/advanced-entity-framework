@@ -56,6 +56,7 @@ namespace AdvancedEntityFramework.Api.Controllers
         public async Task<ActionResult<ListStudentsResponse>> List()
         {
             var entities = await _schoolDbContext.Students
+                .Where(x => x.Active)
                 .ToListAsync();
             
             var students = entities.Select(x => new Student(x.StudentId, x.FirstName, x.LastName,

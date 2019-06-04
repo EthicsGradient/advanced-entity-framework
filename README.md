@@ -50,15 +50,16 @@ where		JSON_VALUE(NewValues, '$.FirstName') = '...'
   - Trace each web request
   - Identify slow performing SQL queries
   - Installs and runs locally
-  - No config/code changes required
   - FREE
 
 ## Query optimisations
 
 - *** List students ***
-  - Don't use `.Include()`
+  - Only include the fields that are required by calling `.Select()` after `.Where()` - reduce bandwidth
+  - Extension methods for common queries (`.WhereActive()`)
 ```
 var students = await _schoolDbContext.Students
+	.WhereActive()
 	.Select(x => new Student
 	(
 		x.StudentId,
@@ -72,7 +73,6 @@ var students = await _schoolDbContext.Students
 ```
 - Find student
   - Only include the fields that are required by calling `.Select()` after `.Where()` - reduce bandwidth
-  - Always project outside of the query itself - avoid in-memory evaluation
 ```
 return await _schoolDbContext.Students
     .Where(x => x.StudentId == studentId)

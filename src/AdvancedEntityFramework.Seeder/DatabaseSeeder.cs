@@ -37,7 +37,8 @@ namespace AdvancedEntityFramework.Seeder
             var studentFaker = new Faker<StudentEntity>()
                 .RuleFor(x => x.FirstName, f => f.Name.FirstName())
                 .RuleFor(x => x.LastName, f => f.Name.LastName())
-                .RuleFor(x => x.DateOfBirth, f => f.Date.Between(DateTime.UtcNow.AddYears(-16), DateTime.UtcNow.AddYears(-11)));
+                .RuleFor(x => x.DateOfBirth, f => f.Date.Between(DateTime.UtcNow.AddYears(-16), DateTime.UtcNow.AddYears(-11)))
+                .RuleFor(x => x.Active, true);
 
             var insertedCount = 0;
 
