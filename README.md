@@ -28,7 +28,7 @@
 
 ## Auditing
 
-- IEntity`
+- `IEntity`
   - `CreatedAt`
   - `UpdatedAt`
 - `AuditEntity`
@@ -41,7 +41,7 @@
 ```
 select		*
 from		Audit
-where		JSON_VALUE(NewValues, '$.FirstName') = ''
+where		JSON_VALUE(NewValues, '$.FirstName') = '...'
 ```
 
 ## Profiling
@@ -55,21 +55,6 @@ where		JSON_VALUE(NewValues, '$.FirstName') = ''
 
 ## Query optimisations
 
-- Find student
-  - Only include the fields that are required by calling `.Select()` after `.Where()` - reduce bandwidth
-  - Always project outside of the query itself - avoid in-memory evaluation
-```
-return await _schoolDbContext.Students
-    .Where(x => x.StudentId == studentId)
-    .Select(x => new FindStudentResponse
-    (
-        x.StudentId,
-        x.FirstName,
-        x.LastName,
-        x.DateOfBirth
-    ))
-    .SingleOrDefaultAsync();
-```
 - *** List students ***
   - Don't use `.Include()`
 ```
@@ -84,6 +69,21 @@ var students = await _schoolDbContext.Students
 	.ToListAsync();
 
 	return new ListStudentsResponse(students);
+```
+- Find student
+  - Only include the fields that are required by calling `.Select()` after `.Where()` - reduce bandwidth
+  - Always project outside of the query itself - avoid in-memory evaluation
+```
+return await _schoolDbContext.Students
+    .Where(x => x.StudentId == studentId)
+    .Select(x => new FindStudentResponse
+    (
+        x.StudentId,
+        x.FirstName,
+        x.LastName,
+        x.DateOfBirth
+    ))
+    .SingleOrDefaultAsync();
 ```
 - *** In-memory evaluation ***
   - `GroupBy()` before `.Where`
@@ -101,8 +101,7 @@ var students = await _schoolDbContext.Students
 
 - Developers have the potential to write inefficient queries, but this is also true for raw SQL - make sure they're profiled and optimised
 - Start with Entity Framework to get a head start - it's always better to release a product earlier with potential performance problems as opposed to wait until everything is perfect
-- Queries that can't be optimised using Entity Framework can be replaced
-
+- Queries that can't be optimised using Entity Framework can be replaced by raw SQL (potentially with Dapper)
 
 ## References
 
